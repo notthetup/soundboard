@@ -5,7 +5,6 @@
   "main": "index.js",
   "dependencies": {
     "audio-mixer": "github:notthetup/audio-mixer",
-    "lame": "^1.2.4",
     "mumble": "^0.3.10",
     "wav": "^1.0.1"
   },
