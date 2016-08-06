@@ -1,0 +1,22 @@
+{
+  "name": "soundboard",
+  "version": "1.0.0",
+  "description": "soundboard",
+  "main": "index.js",
+  "dependencies": {
+    "audio-mixer": "github:notthetup/audio-mixer",
+    "lame": "^1.2.4",
+    "mumble": "^0.3.10",
+    "wav": "^1.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "sound",
+    "board"
+  ],
+  "author": "Chinmay Pendharkar",
+  "license": "MIT"
+}
