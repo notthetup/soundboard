@@ -1,0 +1,22 @@
+{
+  "name": "wbl-soundboard",
+  "version": 1,
+  "portName": "nanoPAD2 PAD",
+  "url": "mumble://listen.webuild.sg",
+  "auth": {
+    "key": "key.pem",
+    "cert": "cert.pem"
+  },
+  "sounds": [{
+      "channel": 37,
+      "file": "rimshot_mono.wav",
+      "gain": 0.7,
+      "mode": "trigger"
+    },{
+      "channel": 39,
+      "file": "modem.wav",
+      "gain": 0.7,
+      "mode": "trigger"
+    }
+  ]
+}

@@ -8,7 +8,9 @@
     "mumble": "^0.3.10",
     "wav": "^1.0.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "midi": "^0.9.5"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
