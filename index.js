@@ -3,6 +3,7 @@ var fs = require('fs');
 var wav = require('wav');
 var Mixer = require('audio-mixer');
 var midi = require('midi');
+var volume = require("pcm-volume");
 
 var config = require('./config.json');
 
@@ -33,6 +34,10 @@ for (var index=0; index< numPorts; index++){
     portNum = index;
     break;
   }
+}
+
+if (portNum === undefined){
+  throw new Error( " No MIDI Device Found");
 }
 
 console.log("Opening MIDI Port...");
@@ -72,17 +77,27 @@ function connectToMumble(url, username, options, callback){
   });
 }
 
-function playFile(filename, gain){
+function playFile(filename, gainLevel){
   console.log("Playing...", filename);
+
   var reader = new wav.Reader();
-  reader.pipe(mixer.input({
+  var gain = new volume();
+  gain.setVolume(gainLevel);
+
+  reader.pipe(gain);
+  gain.pipe(mixer.input({
     sampleRate: format.sampleRate,
     channels: format.channels,
     bitDepth: format.bitDepth
   }));
   fs.createReadStream(filename).pipe(reader);
+
   reader.on('finish', () =>{
-    currentlyPlaying.splice(currentlyPlaying.indexOf(reader),1);
+    currentlyPlaying.forEach((thisPlayer, index) =>{
+      if (thisPlayer.reader === reader){
+        currentlyPlaying.splice(index,1);
+      }
+    });
   });
-  return reader;
+  return { "reader": reader, "gain" : gain};
 }
