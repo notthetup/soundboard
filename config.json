@@ -12,52 +12,51 @@
     "gain": 0.6
   },
   "stop":{
-    "channel": 2
+    "channel": 50
   },
   "sounds": [{
-      "startCh": 37,
-      "stopCh": 36,
+      "channel": 37,
       "file": "sounds/music/shinyspaceships_intro_outro_trimmed.wav",
       "gain": 0.3,
       "mode": "play",
-      "fadeOut": false
+      "fadeOut": true
     },{
-      "startCh": 39,
+      "channel": 39,
       "file": "sounds/FX/rimshot_mono.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
-      "startCh": 41,
+      "channel": 41,
       "file": "sounds/FX/O-Oh_mono.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
-      "startCh": 43,
+      "channel": 43,
       "file": "sounds/FX/wawawa_441.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
-      "startCh": 45,
+      "channel": 45,
       "file": "sounds/FX/error_mono.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
-      "startCh": 38,
+      "channel": 36,
       "file": "sounds/FX/machinegun_mono.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
-      "startCh": 47,
+      "channel": 47,
       "file": "sounds/FX/modem_mono.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
-      "startCh": 49,
+      "channel": 49,
       "file": "sounds/FX/loop_441.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
-      "startCh": 51,
+      "channel": 51,
       "file": "sounds/FX/zap_441.wav",
       "gain": 0.3,
       "mode": "trigger"

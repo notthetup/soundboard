@@ -7,9 +7,11 @@ var volume = require("pcm-volume");
 
 var config = require('./config.json');
 
-var NOTEON = 128
-var NOTEOFF = 144;
+var NOTEON = 144
+var NOTEOFF = 128;
 var CTRLCHANGE = 176;
+
+var STOPCH = 50;
 
 var format = {
   endianness: 'LE',
@@ -17,19 +19,17 @@ var format = {
   sampleRate: 44100,
   byteRate: 176400,
   blockAlign: 4,
-  bitDepth: 16
+  bitDepth: 16,
+  gain: config.masterGain.gain
 };
 
 var currentlyPlaying = [];
 
+var mumbleInput;
 var mixer = new Mixer({
   channels: format.channels
 });
 
-var masterGain = new volume();
-masterGain.setVolume(config.masterGain.gain);
-
-mixer.pipe(masterGain);
 
 // Set up a new input.
 var portNum;
@@ -56,8 +56,12 @@ connectToMumble(config.url, "FX", {
 
 
 function onConnection(outputStream){
-  masterGain.pipe(outputStream);
+  mumbleInput = outputStream;
+
+  mixer.pipe(mumbleInput);
+
   console.log("Registering MIDI Handler");
+
   input.on('message', function(deltaTime, message) {
     var messageType = message[0];
     var channel = message[1];
@@ -68,17 +72,31 @@ function onConnection(outputStream){
 }
 
 function mapToSounds(messageType,channel,velocity){
+  if (channel == STOPCH){
+    currentlyPlaying.forEach((thisPlayer) =>{
+      thisPlayer.end();
+    });
+  }
+
   if (messageType == CTRLCHANGE){
     if (channel == config.masterGain.channel){
       var gain = velocity/(127/0.7);
       console.log("Setting master gain to.. ", gain);
-      masterGain.setVolume(gain);
+      mumbleInput.setGain(gain);
     }
   }
   config.sounds.forEach((thisSound) => {
-    if (channel !== thisSound.startCh) return;
-    if (messageType === NOTEON && thisSound.mode === "trigger"){
-      currentlyPlaying.push(playFile(thisSound.file, thisSound.gain));
+    if (channel !== thisSound.channel) return;
+    if (messageType === NOTEON){
+      currentlyPlaying.push(playFile(thisSound));
+    }
+    if (messageType === NOTEOFF && thisSound.mode === "play"){
+      currentlyPlaying.forEach((thisPlayer) =>{
+        if (thisPlayer.channel === channel){
+            console.log("Stopping.. ", channel);
+            thisPlayer.reader.end();
+        }
+      });
     }
   });
 }
@@ -95,28 +113,30 @@ function connectToMumble(url, username, options, callback){
   });
 }
 
-function playFile(filename, gainLevel){
-  console.log("Playing...", filename);
+function playFile(soundConfig){
+  console.log("Playing...", soundConfig.file);
 
   var reader = new wav.Reader();
   var gain = new volume();
-  gain.setVolume(gainLevel);
 
-  reader.pipe(gain);
-  gain.pipe(mixer.input({
-    sampleRate: format.sampleRate,
-    channels: format.channels,
-    bitDepth: format.bitDepth
-  }));
-  fs.createReadStream(filename).pipe(reader);
+  gain.setVolume(soundConfig.gain);
 
   reader.on('finish', () =>{
+    console.log("Finishing up...");
     currentlyPlaying.forEach((thisPlayer, index) =>{
       if (thisPlayer.reader === reader){
-        currentlyPlaying.splice(index,1);
+          currentlyPlaying.splice(index,1);
       }
     });
     console.log("Still playing..",currentlyPlaying.length);
   });
-  return { "reader": reader, "gain" : gain};
+
+  fs.createReadStream(soundConfig.file)
+  .pipe(reader).pipe(gain)
+  .pipe(mixer.input({
+    sampleRate: format.sampleRate,
+    channels: format.channels,
+    bitDepth: format.bitDepth
+  }));
+  return {"reader": reader, "gain" : gain, "channel": soundConfig.channel};
 }
