@@ -9,6 +9,7 @@ var config = require('./config.json');
 
 var NOTEON = 128
 var NOTEOFF = 144;
+var CTRLCHANGE = 176;
 
 var format = {
   endianness: 'LE',
@@ -25,6 +26,11 @@ var mixer = new Mixer({
   channels: format.channels
 });
 
+var masterGain = new volume();
+masterGain.setVolume(config.masterGain.gain);
+
+mixer.pipe(masterGain);
+
 // Set up a new input.
 var portNum;
 var input = new midi.input();
@@ -37,7 +43,7 @@ for (var index=0; index< numPorts; index++){
 }
 
 if (portNum === undefined){
-  throw new Error( " No MIDI Device Found");
+  throw new Error("No MIDI Device Found");
 }
 
 console.log("Opening MIDI Port...");
@@ -50,18 +56,30 @@ connectToMumble(config.url, "FX", {
 
 
 function onConnection(outputStream){
-  mixer.pipe(outputStream);
+  masterGain.pipe(outputStream);
   console.log("Registering MIDI Handler");
   input.on('message', function(deltaTime, message) {
     var messageType = message[0];
     var channel = message[1];
     var velocity = message[2];
-    config.sounds.forEach((thisSound) => {
-      if (channel !== thisSound.channel) return;
-      if (messageType === NOTEON && thisSound.mode === "trigger"){
-        currentlyPlaying.push(playFile(thisSound.file, thisSound.gain));
-      }
-    });
+    // console.log(messageType,channel,velocity);
+    mapToSounds(messageType,channel,velocity);
+  });
+}
+
+function mapToSounds(messageType,channel,velocity){
+  if (messageType == CTRLCHANGE){
+    if (channel == config.masterGain.channel){
+      var gain = velocity/(127/0.7);
+      console.log("Setting master gain to.. ", gain);
+      masterGain.setVolume(gain);
+    }
+  }
+  config.sounds.forEach((thisSound) => {
+    if (channel !== thisSound.startCh) return;
+    if (messageType === NOTEON && thisSound.mode === "trigger"){
+      currentlyPlaying.push(playFile(thisSound.file, thisSound.gain));
+    }
   });
 }
 
@@ -98,6 +116,7 @@ function playFile(filename, gainLevel){
         currentlyPlaying.splice(index,1);
       }
     });
+    console.log("Still playing..",currentlyPlaying.length);
   });
   return { "reader": reader, "gain" : gain};
 }
