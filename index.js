@@ -27,7 +27,10 @@ var currentlyPlaying = [];
 
 var mumbleInput;
 var mixer = new Mixer({
-  channels: format.channels
+  channels: format.channels,
+  sampleRate: format.sampleRate,
+  bitDepth: format.bitDepth,
+  chunkSize : 256
 });
 
 
@@ -95,6 +98,7 @@ function mapToSounds(messageType,channel,velocity){
         if (thisPlayer.channel === channel){
             console.log("Stopping.. ", channel);
             thisPlayer.reader.end();
+            thisPlayer.mixerInput.end();
         }
       });
     }
@@ -118,10 +122,11 @@ function playFile(soundConfig){
 
   var reader = new wav.Reader();
   var gain = new volume();
+  var mixerInput = mixer.input();
 
   gain.setVolume(soundConfig.gain);
 
-  reader.on('finish', () =>{
+  mixerInput.on('finish', () =>{
     console.log("Finishing up...");
     currentlyPlaying.forEach((thisPlayer, index) =>{
       if (thisPlayer.reader === reader){
@@ -132,11 +137,6 @@ function playFile(soundConfig){
   });
 
   fs.createReadStream(soundConfig.file)
-  .pipe(reader).pipe(gain)
-  .pipe(mixer.input({
-    sampleRate: format.sampleRate,
-    channels: format.channels,
-    bitDepth: format.bitDepth
-  }));
-  return {"reader": reader, "gain" : gain, "channel": soundConfig.channel};
+  .pipe(reader).pipe(gain).pipe(mixerInput);
+  return {"mixerInput": mixerInput, "reader": reader, "gain" : gain, "channel": soundConfig.channel};
 }
