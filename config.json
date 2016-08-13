@@ -36,18 +36,18 @@
       "gain": 0.3,
       "mode": "trigger"
     },{
-      "channel": 45,
+      "channel": 36,
       "file": "sounds/FX/error_mono.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
-      "channel": 36,
-      "file": "sounds/FX/machinegun_mono.wav",
+      "channel": 45,
+      "file": "sounds/FX/modem_mono.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
       "channel": 47,
-      "file": "sounds/FX/modem_mono.wav",
+      "file": "sounds/FX/machinegun_mono.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
