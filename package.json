@@ -6,11 +6,10 @@
   "dependencies": {
     "audio-mixer": "github:notthetup/audio-mixer",
     "mumble": "^0.3.10",
-    "wav": "^1.0.1"
+    "wav": "^1.0.1",
+    "midi": "^0.9.5"
   },
   "devDependencies": {
-    "midi": "^0.9.5",
-    "pcm-volume": "^1.0.0"
   },
   "scripts": {
     "start": "node index.js",

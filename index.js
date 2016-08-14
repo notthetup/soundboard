@@ -3,7 +3,6 @@ var fs = require('fs');
 var wav = require('wav');
 var Mixer = require('audio-mixer');
 var midi = require('midi');
-var volume = require("pcm-volume");
 
 var config = require('./config.json');
 
@@ -12,6 +11,8 @@ var NOTEOFF = 128;
 var CTRLCHANGE = 176;
 
 var STOPCH = 50;
+
+var DECREMENT_STEPS = 20;
 
 var format = {
   endianness: 'LE',
@@ -29,8 +30,8 @@ var mumbleInput;
 var mixer = new Mixer({
   channels: format.channels,
   sampleRate: format.sampleRate,
-  bitDepth: format.bitDepth,
-  chunkSize : 256
+  bitDepth: format.bitDepth
+  // chunkSize : 256
 });
 
 
@@ -95,10 +96,21 @@ function mapToSounds(messageType,channel,velocity){
     }
     if (messageType === NOTEOFF && thisSound.mode === "play"){
       currentlyPlaying.forEach((thisPlayer) =>{
-        if (thisPlayer.channel === channel){
-            console.log("Stopping.. ", channel);
-            thisPlayer.reader.end();
-            thisPlayer.mixerInput.end();
+        if (thisPlayer.config.channel === channel){
+
+            var fadeTime = thisPlayer.config.fadeOut || 0;
+            var fadeDecrement = thisPlayer.mixerInput.gain/DECREMENT_STEPS;
+            if (fadeTime){
+              console.log("Fading.. ", channel);
+              var fadeInterval = setInterval(() => {
+                thisPlayer.mixerInput.gain -= fadeDecrement;
+              },fadeTime/DECREMENT_STEPS);
+            }
+            setTimeout(() => {
+              console.log("Stopping.. ", channel);
+              clearInterval(fadeInterval);
+              thisPlayer.mixerInput.end();
+            },fadeTime);
         }
       });
     }
@@ -120,23 +132,23 @@ function connectToMumble(url, username, options, callback){
 function playFile(soundConfig){
   console.log("Playing...", soundConfig.file);
 
+  var file = fs.createReadStream(soundConfig.file, { highWaterMark: 1024 });
   var reader = new wav.Reader();
-  var gain = new volume();
   var mixerInput = mixer.input();
 
-  gain.setVolume(soundConfig.gain);
+  mixerInput.gain = soundConfig.gain;
 
   mixerInput.on('finish', () =>{
     console.log("Finishing up...");
     currentlyPlaying.forEach((thisPlayer, index) =>{
-      if (thisPlayer.reader === reader){
+      if (thisPlayer.mixerInput === mixerInput){
           currentlyPlaying.splice(index,1);
       }
     });
     console.log("Still playing..",currentlyPlaying.length);
   });
 
-  fs.createReadStream(soundConfig.file)
-  .pipe(reader).pipe(gain).pipe(mixerInput);
-  return {"mixerInput": mixerInput, "reader": reader, "gain" : gain, "channel": soundConfig.channel};
+
+  file.pipe(reader).pipe(mixerInput);
+  return {"mixerInput": mixerInput, "config": soundConfig};
 }

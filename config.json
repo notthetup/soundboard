@@ -9,7 +9,7 @@
   },
   "masterGain": {
     "channel": 2,
-    "gain": 0.6
+    "gain": 0.7
   },
   "stop":{
     "channel": 50
@@ -19,7 +19,7 @@
       "file": "sounds/music/shinyspaceships_intro_outro_trimmed.wav",
       "gain": 0.3,
       "mode": "play",
-      "fadeOut": true
+      "fadeOut": 1000
     },{
       "channel": 39,
       "file": "sounds/FX/rimshot_mono.wav",
