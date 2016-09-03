@@ -30,8 +30,8 @@ var mumbleInput;
 var mixer = new Mixer({
   channels: format.channels,
   sampleRate: format.sampleRate,
-  bitDepth: format.bitDepth
-  // chunkSize : 256
+  bitDepth: format.bitDepth,
+  chunkSize : 256
 });
 
 

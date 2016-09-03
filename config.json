@@ -9,7 +9,7 @@
   },
   "masterGain": {
     "channel": 2,
-    "gain": 0.7
+    "gain": 0.5
   },
   "stop":{
     "channel": 50
