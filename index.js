@@ -101,7 +101,8 @@ function mapToSounds(messageType,channel,velocity){
             var fadeTime = thisPlayer.config.fadeOut || 0;
             var fadeDecrement = thisPlayer.mixerInput.gain/DECREMENT_STEPS;
             if (fadeTime){
-              console.log("Fading.. ", channel);
+              console.log("Fading Out.. ", channel);
+              clearInterval(thisPlayer.fadeInterval);
               var fadeInterval = setInterval(() => {
                 thisPlayer.mixerInput.gain -= fadeDecrement;
               },fadeTime/DECREMENT_STEPS);
@@ -148,7 +149,16 @@ function playFile(soundConfig){
     console.log("Still playing..",currentlyPlaying.length);
   });
 
+  var fadeTime = soundConfig.fadeIn || 0;
+  var fadeIncrement = mixerInput.gain/DECREMENT_STEPS;
+  if (fadeTime){
+    console.log("Fading In.. ", soundConfig.channel);
+    mixerInput.gain = 0;
+    var fadeInterval = setInterval(() => {
+      mixerInput.gain += fadeIncrement;
+    },fadeTime/DECREMENT_STEPS);
+  }
 
   file.pipe(reader).pipe(mixerInput);
-  return {"mixerInput": mixerInput, "config": soundConfig};
+  return {"mixerInput": mixerInput, "config": soundConfig, "fadeInterval" : fadeInterval};
 }
