@@ -137,8 +137,6 @@ function playFile(soundConfig){
   var reader = new wav.Reader();
   var mixerInput = mixer.input();
 
-  mixerInput.gain = soundConfig.gain;
-
   mixerInput.on('finish', () =>{
     console.log("Finishing up...");
     currentlyPlaying.forEach((thisPlayer, index) =>{
@@ -150,7 +148,7 @@ function playFile(soundConfig){
   });
 
   var fadeTime = soundConfig.fadeIn || 0;
-  var fadeIncrement = mixerInput.gain/DECREMENT_STEPS;
+  var fadeIncrement = soundConfig.gain/DECREMENT_STEPS;
   if (fadeTime){
     console.log("Fading In.. ", soundConfig.channel);
     mixerInput.gain = 0;
@@ -158,6 +156,10 @@ function playFile(soundConfig){
       mixerInput.gain += fadeIncrement;
     },fadeTime/DECREMENT_STEPS);
   }
+  setTimeout(() => {
+    clearInterval(fadeInterval);
+    mixerInput.gain = soundConfig.gain;
+  },fadeTime);
 
   file.pipe(reader).pipe(mixerInput);
   return {"mixerInput": mixerInput, "config": soundConfig, "fadeInterval" : fadeInterval};
