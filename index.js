@@ -77,8 +77,9 @@ function onConnection(outputStream){
 
 function mapToSounds(messageType,channel,velocity){
   if (channel == STOPCH){
+    console.log("50. All : Stopping All Sounds!");
     currentlyPlaying.forEach((thisPlayer) =>{
-      thisPlayer.end();
+      thisPlayer.mixerInput.end();
     });
   }
 
@@ -101,14 +102,14 @@ function mapToSounds(messageType,channel,velocity){
             var fadeTime = thisPlayer.config.fadeOut || 0;
             var fadeDecrement = thisPlayer.mixerInput.gain/DECREMENT_STEPS;
             if (fadeTime){
-              console.log("Fading Out.. ", channel);
+              logMessage(thisPlayer.config, "Fading Out.. ");
               clearInterval(thisPlayer.fadeInterval);
               var fadeInterval = setInterval(() => {
                 thisPlayer.mixerInput.gain -= fadeDecrement;
               },fadeTime/DECREMENT_STEPS);
             }
             setTimeout(() => {
-              console.log("Stopping.. ", channel);
+              logMessage(thisPlayer.config,"Stopping.. ");
               clearInterval(fadeInterval);
               thisPlayer.mixerInput.end();
             },fadeTime);
@@ -131,26 +132,28 @@ function connectToMumble(url, username, options, callback){
 }
 
 function playFile(soundConfig){
-  console.log("Playing...", soundConfig.file);
+  logMessage(soundConfig, (soundConfig.mode ==  'trigger' ? "Triggering..." : "Playing..."));
 
   var file = fs.createReadStream(soundConfig.file, { highWaterMark: 1024 });
   var reader = new wav.Reader();
   var mixerInput = mixer.input();
 
   mixerInput.on('finish', () =>{
-    console.log("Finishing up...");
     currentlyPlaying.forEach((thisPlayer, index) =>{
       if (thisPlayer.mixerInput === mixerInput){
+          logMessage(thisPlayer.config,"Finishing up...");
           currentlyPlaying.splice(index,1);
       }
     });
-    console.log("Still playing..",currentlyPlaying.length);
+    if (currentlyPlaying.length){
+      console.log("Still playing.. ",currentlyPlaying.length, " tracks");
+    }
   });
 
   var fadeTime = soundConfig.fadeIn || 0;
   var fadeIncrement = soundConfig.gain/DECREMENT_STEPS;
   if (fadeTime){
-    console.log("Fading In.. ", soundConfig.channel);
+    logMessage(soundConfig,"Fading In.. ");
     mixerInput.gain = 0;
     var fadeInterval = setInterval(() => {
       mixerInput.gain += fadeIncrement;
@@ -163,4 +166,8 @@ function playFile(soundConfig){
 
   file.pipe(reader).pipe(mixerInput);
   return {"mixerInput": mixerInput, "config": soundConfig, "fadeInterval" : fadeInterval};
+}
+
+function logMessage(config, message){
+  console.log(config.channel + ". " + config.name + " : " + message);
 }

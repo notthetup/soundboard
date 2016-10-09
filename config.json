@@ -16,48 +16,64 @@
   },
   "sounds": [{
       "channel": 37,
+      "name" : "Intro",
+      "file": "sounds/music/shinyspaceships_intro_outro_trimmed.wav",
+      "gain": 0.25,
+      "mode": "play",
+      "fadeOut": 1000
+    },{
+      "channel": 36,
+      "name" : "Outro",
       "file": "sounds/music/shinyspaceships_intro_outro_trimmed.wav",
       "gain": 0.25,
       "mode": "play",
       "fadeOut": 1000,
-      "fadeIn": 1000
+      "fadeIn": 500
     },{
       "channel": 39,
+      "name" : "Badumtish",
       "file": "sounds/FX/rimshot_mono.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
       "channel": 41,
+      "name" : "Oh-oh!",
       "file": "sounds/FX/O-Oh_mono.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
       "channel": 43,
+      "name" : "Wa-wa-wa",
       "file": "sounds/FX/wawawa_441.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
-      "channel": 36,
+      "channel": 42,
+      "name" : "Error",
       "file": "sounds/FX/error_mono.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
       "channel": 45,
+      "name" : "IO Polling",
       "file": "sounds/FX/modem_mono.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
       "channel": 47,
+      "name" : "Rapid Fire",
       "file": "sounds/FX/machinegun_mono.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
       "channel": 49,
+      "name" : "Event Loop",
       "file": "sounds/FX/loop_441.wav",
       "gain": 0.3,
       "mode": "trigger"
     },{
       "channel": 51,
+      "name" : "Event Loop",
       "file": "sounds/FX/zap_441.wav",
       "gain": 0.3,
       "mode": "trigger"
