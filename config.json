@@ -27,8 +27,8 @@
       "file": "sounds/music/shinyspaceships_intro_outro_trimmed.wav",
       "gain": 0.25,
       "mode": "play",
-      "fadeOut": 1000,
-      "fadeIn": 500
+      "fadeOut": 5000,
+      "fadeIn": 4000
     },{
       "channel": 39,
       "name" : "Badumtish",
