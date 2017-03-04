@@ -73,7 +73,7 @@
       "mode": "trigger"
     },{
       "channel": 51,
-      "name" : "Event Loop",
+      "name" : "Electric Plug",
       "file": "sounds/FX/zap_441.wav",
       "gain": 0.3,
       "mode": "trigger"
