@@ -3,6 +3,7 @@ var fs = require('fs');
 var wav = require('wav');
 var Mixer = require('audio-mixer');
 var midi = require('midi');
+var Speaker = require('speaker');
 
 var config = require('./config.json');
 
@@ -13,6 +14,8 @@ var CTRLCHANGE = 176;
 var STOPCH = 50;
 
 var DECREMENT_STEPS = 20;
+
+var LOCAL = process.argv[2] == '--local';
 
 var format = {
   endianness: 'LE',
@@ -53,10 +56,19 @@ if (portNum === undefined){
 console.log("Opening MIDI Port...");
 input.openPort(portNum);
 
-connectToMumble(config.url, "FX", {
+if (!LOCAL){
+  connectToMumble(config.url, "FX", {
     key: fs.readFileSync( config.auth.key ),
     cert: fs.readFileSync( config.auth.cert )
   }, onConnection);
+}else{
+  onConnection(new Speaker({
+    channels: 1,          // 2 channels
+    bitDepth: 16,         // 16-bit samples
+    sampleRate: 44100     // 44,100 Hz sample rate
+  }));
+}
+
 
 
 function onConnection(outputStream){

@@ -5,14 +5,15 @@
   "main": "index.js",
   "dependencies": {
     "audio-mixer": "github:notthetup/audio-mixer",
+    "midi": "^0.9.5",
     "mumble": "^0.3.11",
-    "wav": "^1.0.1",
-    "midi": "^0.9.5"
+    "speaker": "^0.3.0",
+    "wav": "^1.0.1"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "scripts": {
     "start": "node index.js",
+    "local": "node index.js --local",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
