@@ -56,13 +56,13 @@ if (portNum === undefined){
 console.log("Opening MIDI Port...");
 input.openPort(portNum);
 
-if (!LOCAL){
-  connectToMumble(config.url, "FX", {
-    key: fs.readFileSync( config.auth.key ),
-    cert: fs.readFileSync( config.auth.cert )
-  }, onConnection);
-}else{
-  onConnection(new Speaker({
+connectToMumble(config.url, "FX", {
+  key: fs.readFileSync( config.auth.key ),
+  cert: fs.readFileSync( config.auth.cert )
+}, onConnection);
+
+if (LOCAL){
+  mixer.pipe(new Speaker({
     channels: 1,          // 2 channels
     bitDepth: 16,         // 16-bit samples
     sampleRate: 44100     // 44,100 Hz sample rate
